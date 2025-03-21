@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Genero {
+  genero_id       Int      @id @default(autoincrement())
+  nome            String   @db.VarChar(255)
+  datacriacao     DateTime @default(now()) @db.Timestamp(0)
+  dataatualizacao DateTime @default(now()) @db.Timestamp(0)
+  jogo            Jogo[]
+
+  @@map("genero")
+}
+
+model Jogo {
+  jogo_id         Int        @id @default(autoincrement())
+  nome            String     @db.VarChar(255)
+  lancamento      DateTime   @db.Date
+  genero_id       Int?
+  publisher_id    Int?
+  datacriacao     DateTime   @default(now()) @db.Timestamp(0)
+  dataatualizacao DateTime   @default(now()) @db.Timestamp(0)
+  genero          Genero?    @relation(fields: [genero_id], references: [genero_id], onDelete: NoAction, onUpdate: NoAction, map: "jogo_ibfk_1")
+  publisher       Publisher? @relation(fields: [publisher_id], references: [publisher_id], onDelete: NoAction, onUpdate: NoAction, map: "jogo_ibfk_2")
+
+  @@index([genero_id], map: "genero_id")
+  @@index([publisher_id], map: "publisher_id")
+  @@map("jogo")
+}
+
+model Publisher {
+  publisher_id    Int      @id @default(autoincrement())
+  nome            String   @db.VarChar(255)
+  datacriacao     DateTime @default(now()) @db.Timestamp(0)
+  dataatualizacao DateTime @default(now()) @db.Timestamp(0)
+  email           String   @db.VarChar(255)
+  jogo            Jogo[]
+
+  @@map("publisher")
+}
